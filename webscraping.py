@@ -40,7 +40,8 @@ option_list = select.options
 conn = conn_db.connect_open()
 cur = conn.cursor()
 
-#TODO: Inserir paises em banco de dados
+#TODO: Inserir try catch
+#TODO: Criar script separado para captura de paises
 # Imprimi lista de paises
 for x in option_list:
   command = 'INSERT INTO public.tb_paises(cd_pais, nm_pais, ds_pais) VALUES '
