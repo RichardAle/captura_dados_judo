@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.safari.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+import utils.conn_db as conn_db
 
 # URL utilizada
 url = "https://judobase.ijf.org/#/search"
@@ -36,13 +37,30 @@ select_country_list = driver.find_element(By.XPATH, "//html/body/div[1]/div[2]/d
 select = Select(select_country_list)  
 option_list = select.options
 
+conn = conn_db.connect_open()
+cur = conn.cursor()
 
 #TODO: Inserir paises em banco de dados
 # Imprimi lista de paises
 for x in option_list:
-  print(x.text)
-  print(x.id)
+  command = 'INSERT INTO public.tb_paises(cd_pais, nm_pais, ds_pais) VALUES '
+  text = x.text.replace(" ", "")
+  text = x.text.replace("'", "''")
+  #imprimi valores que não tem delimitador
+  if "/" not in text:
+    print(text)
+    continue
 
+  command = command + "('" + text.split("/")[0]
+  command = command + "', '" + text.split("/")[1]
+  command = command + "', '" + text + "');"
+  cur.execute(command)
+  print(command)
+
+conn.commit()
+cur.close()
+
+conn_db.connect_close(conn)
 #TODO: Loop de leitura dos perfis de competidores
 
 # Encerra safari
