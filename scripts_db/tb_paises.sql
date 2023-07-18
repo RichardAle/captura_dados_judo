@@ -1,0 +1,11 @@
+
+CREATE TABLE IF NOT EXISTS tb_paises
+(
+    id_pais INT GENERATED ALWAYS AS IDENTITY, 
+    cd_pais VARCHAR(3) PRIMARY KEY NOT NULL, 
+    nm_pais VARCHAR(50) NOT NULL, 
+    ds_pais VARCHAR(53) NOT NULL
+);
+
+
+
