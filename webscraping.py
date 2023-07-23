@@ -1,71 +1,90 @@
 import time
 import requests
-import pandas as pd 
+import pandas as pd
 from bs4 import BeautifulSoup
-from selenium import webdriver 
-from selenium.webdriver.safari.options import Options
+from selenium import webdriver
+from selenium.webdriver.safari.options import (
+    Options,
+)
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.select import (
+    Select,
+)
 import utils.conn_db as conn_db
 
-# URL utilizada
-url = "https://judobase.ijf.org/#/search"
 
-# Abre o safari 
-option = Options()
-option.headless = True
-driver = webdriver.Safari(options=option)
-
-# Abre a URL indicada
-driver.get(url)
-# Aguarda URL Carregar
-time.sleep(5)
-
-# div class=form-control name=country
-# Seleciona no drop box a opcao indicada
-select_element = driver.find_element(By.NAME, "what")
-select = Select(select_element)  
-select.select_by_value("competitor") ##  competitor or competition
-
-time.sleep(5)
-
-# element = driver.find_element(By.NAME, "country")
-# html_content = element.get_attribute('outerHTML')
-
-# Carrega lista de paises possivei de selecionar
-select_country_list = driver.find_element(By.XPATH, "//html/body/div[1]/div[2]/div/div[2]/div/div/div[1]/div[4]/select")
-select = Select(select_country_list)  
-option_list = select.options
-
-conn = conn_db.connect_open()
-cur = conn.cursor()
-
-#TODO: Inserir try catch
-#TODO: Criar script separado para captura de paises
-# Imprimi lista de paises
-for x in option_list:
-  command = 'INSERT INTO public.tb_paises(cd_pais, nm_pais, ds_pais) VALUES '
-  text = x.text.replace(" ", "")
-  text = x.text.replace("'", "''")
-  #imprimi valores que não tem delimitador
-  if "/" not in text:
-    print(text)
-    continue
-
-  command = command + "('" + text.split("/")[0]
-  command = command + "', '" + text.split("/")[1]
-  command = command + "', '" + text + "');"
-  cur.execute(command)
-  print(command)
-
-conn.commit()
-cur.close()
-
-conn_db.connect_close(conn)
-#TODO: Loop de leitura dos perfis de competidores
-
-# Encerra safari
-driver.quit()
+# Funtion to initialize the webdriver
+def init_driver():
+    """initialize the webdriver"""
+    # Abre o safari
+    option = Options()
+    option.headless = True
+    driver = webdriver.Safari(options=option)
+    return driver
 
 
+# function to close the webdriver
+def close_driver(driver):
+    """close the webdriver"""
+    # fecha o driver
+    driver.close()
+    return driver
 
+
+# Function to get the page
+def get_page(driver, url):
+    """get the page"""
+    # Abre a URL indicada
+    driver.get(url)
+    # Aguarda URL Carregar
+    time.sleep(5)
+    return driver
+
+
+# Function to select the option in the dropdown
+def select_option(driver, name, value):
+    """select the option in the dropdown"""
+    # Seleciona no drop box a opcao indicada
+    select_element = driver.find_element(By.NAME, name)
+    select = Select(select_element)
+    select.select_by_value(value)  # competitor or competition
+    time.sleep(5)
+    return driver
+
+
+# Function to catch webpage contents
+def get_webpage_content(driver, xpath):
+    """catch webpage contents"""
+    element = driver.find_element(By.XPATH, xpath)
+    html_content = element.get_attribute("outerHTML")
+    return html_content
+
+
+def main():
+    """main function"""
+    # URL utilizada
+    url = "https://judobase.ijf.org/#/search"
+
+    # inicializa o driver
+    driver = init_driver()
+
+    # carrega a pagina
+    driver = get_page(driver, url)
+
+    # Catch the webpage content
+    html_content = get_webpage_content(
+        driver,
+        "//html/",
+    )
+
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    content = soup.find(id="content")
+
+    print(content)
+
+    # fecha o driver
+    driver = close_driver(driver)
+
+
+main()
