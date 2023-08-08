@@ -10,4 +10,5 @@ CREATE TABLE IF NOT EXISTS tb_categoria
 );
 
 
-
+#Add UNIQUE constraint to column id_peso
+ALTER TABLE tb_categoria ADD CONSTRAINT tb_categoria_id_peso_key UNIQUE (id_peso);
