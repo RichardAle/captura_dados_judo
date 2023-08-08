@@ -44,23 +44,32 @@ def extracao_paises():
 
     # Imprimi lista de paises
     for x in option_list:
-        command = (
-            "INSERT INTO public.tb_paises(cd_pais, nm_pais, ds_pais) VALUES "
-        )
+        # Vetor campos
+        campos = [
+            "cd_atributo_pais",
+            "cd_pais",
+            "nm_pais",
+            "ds_pais",
+        ]
         # Trata espacos
         text = x.text.replace(" ", "")
+        value = x.get_attribute("value")
+
         # Trata texto com '
         text = x.text.replace("'", "''")
         # imprimi valores que não tem delimitador
         if "/" not in text:
             print(text)
             continue
-        # Monta string com inserts
-        command = command + "('" + text.split("/")[0]
-        command = command + "', '" + text.split("/")[1]
-        command = command + "', '" + text + "');"
-        cur.execute(command)
-    #   print(command)
+        # Vetor valores
+        valores = [
+            value,
+            text.split("/")[0].strip(),
+            text.split("/")[1].strip(),
+            text.strip(),
+        ]
+        print(valores)
+        conn_db.insert_table(conn, "tb_pais", campos, valores)
 
     conn.commit()
     cur.close()
@@ -69,3 +78,6 @@ def extracao_paises():
 
     # Encerra safari
     driver.quit()
+
+
+extracao_paises()

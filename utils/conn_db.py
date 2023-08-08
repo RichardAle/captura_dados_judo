@@ -11,7 +11,7 @@ def connect_open():
         params = config()
 
         # connect to the PostgreSQL server
-        print("Connecting to the PostgreSQL database...")
+        # print("Connecting to the PostgreSQL database...")
         conn = psycopg2.connect(**params)
 
     except (Exception, psycopg2.DatabaseError) as error:
@@ -26,7 +26,7 @@ def connect_close(conn):
         # Encerraconexão com servidor PostgreSQL
         if conn is not None:
             conn.close()
-            print("Database connection closed.")
+            # print("Database connection closed.")
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -43,7 +43,7 @@ def execute_query(conn, query):
         # execute a statement
         cur.execute(query)
 
-        # display the PostgreSQL database server version
+        # Execute query
         ret = cur.fetchall()
 
         # close the communication with the PostgreSQL
@@ -75,17 +75,19 @@ def insert_table(conn, table, columns, values):
         columns = (
             str(columns).replace("[", "").replace("]", "").replace("'", "")
         )
-        values = str(values).replace("[", "").replace("]", "")
-
-        print(
-            "INSERT INTO "
-            + table
-            + " ("
-            + columns
-            + ") VALUES ("
-            + values
-            + ") ;"
+        values = (
+            str(values).replace("[", "").replace("]", "").replace('"', "'")
         )
+
+        # print(
+        #     "INSERT INTO "
+        #     + table
+        #     + " ("
+        #     + columns
+        #     + ") VALUES ("
+        #     + values
+        #     + ") ;"
+        # )
 
         # execute a statement
         cur.execute(
